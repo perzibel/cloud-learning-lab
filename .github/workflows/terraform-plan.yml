@@ -5,6 +5,12 @@ on:
     paths:
       - "terraform/**"
       - ".github/workflows/terraform-plan.yml"
+      - ".github/workflows/terraform-apply.yml"
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
 
 jobs:
   terraform-plan:
@@ -17,6 +23,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Configure AWS credentials with OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
